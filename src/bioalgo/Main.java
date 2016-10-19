@@ -3,7 +3,14 @@ package bioalgo;
 public class Main {
 	public static void main(String[] args) {
 		
-		SuffixTree tree = SuffixTree.ukkonen("gctgca$", "tgc$");
+		try {
+			SuffixTree tree = new SuffixTree("gctgc$");
+			
+			System.out.println(tree);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 }
