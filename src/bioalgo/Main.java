@@ -4,7 +4,8 @@ public class Main {
 	public static void main(String[] args) {
 		
 		try {
-			SuffixTree tree = new SuffixTree("gctgc$");
+			
+			SuffixTree tree = new SuffixTree("gctgca$", "tgc$");
 			
 			System.out.println(tree);
 			

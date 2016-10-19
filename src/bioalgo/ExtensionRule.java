@@ -14,11 +14,19 @@ public class ExtensionRule {
 		this.edge_indx=index;
 	}
 	
-	public void grow(char next_nucl) throws Exception{
+	public void grow(char next_nucl, int id_string, int pos) throws Exception{
+		
 		switch (rule_to_apply) {
 			case 1:
 				//We just add the child at the end
 				node.addNucleotide(next_nucl);
+				
+				//If it is a terminal nucleotid, we update this leaf parameters
+				if(SuffixTree.isTerminal(next_nucl)){
+					node.setIdString(id_string);
+					node.setPos(pos);
+				}
+				
 				break;
 			case 2:
 				//We compute the new edge
@@ -31,11 +39,24 @@ public class ExtensionRule {
 				
 				//When we add a new child without splitting the edge (i.e., when beta is finished but we have children and we can't add the nucleotid),
 				//we just don't add it.
-				if(!n.getEdge().equals(""))
-				node.addChild(n);
+				if(!n.getEdge().equals("")){
+					node.addChild(n);
+					
+					//We copy the parameters value (if it was a leaf, we need to keep those info)
+					n.setIdString(node.getIdString());
+					n.setPos(node.getPos());
+				}
 				
 				//Then we create a new child with this nucleotide
-				node.addChild(next_nucl);
+				Node child = new Node(next_nucl);
+				
+				if(SuffixTree.isTerminal(next_nucl)){
+					child.setIdString(id_string);
+					child.setPos(pos);
+				}
+
+				node.addChild(child);
+				
 				break;
 			case 3:
 				//We do nothing!
@@ -43,7 +64,7 @@ public class ExtensionRule {
 
 			default:
 				throw new Exception("This rule doesn't exist");
-			}
+		}
 	}
 	
 	@Override

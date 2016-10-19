@@ -122,7 +122,7 @@ public class Node {
 		}
 		
 		public boolean isLeaf(){
-			return this.children.isEmpty() && (edge.charAt(edge.length() - 1) == '$' || edge.charAt(edge.length() - 1) == '€');
+			return this.children.isEmpty() && SuffixTree.isTerminal(edge.charAt(edge.length() - 1));
 		}
 		
 		public boolean isTerminal(){
@@ -151,7 +151,7 @@ public class Node {
 			if(isRoot()){
 				s = "ROOT [{";
 			}else if(isLeaf()){
-				s = "Leaf [edge=" + edge + " (" + id_string + ", " + pos + ") {";
+				s = "Leaf [edge=" + edge + " (" + this.id_string + ", " + this.pos + ") {";
 			}else{
 				s = "Node [edge=" + edge + ", children={";
 			}
