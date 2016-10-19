@@ -43,6 +43,40 @@ public class SuffixTree {
 					this.addChild(next_nucl);
 			}
 		}
+		
+		//Now, we finally create the indexes of terminal nodes
+		SuffixTree.generateTerminalEdgeIndexes(root);
+	}
+	
+	private static ArrayList<Integer> generateTerminalEdgeIndexes(Node node){
+		
+		//If it is a terminal, we just return the ID of its string
+		if(node.isTerminal()){
+			ArrayList<Integer> l = new ArrayList<Integer>();
+			l.add(node.getIdString());
+			return l;
+		}else if(node.isLeaf()){
+			return new ArrayList<Integer>(); //This isn't a terminal edge, we don't care about it
+		}
+		
+		ArrayList<Integer> indexes = new ArrayList<Integer>();
+		
+		//If ot is an internal, we change the indexes of this node and we propagate the new indexes to the parent
+		for (int i = 0; i < node.getChildren().size(); i++) {
+			ArrayList<Integer> idx = SuffixTree.generateTerminalEdgeIndexes(node.getChildren().get(i));
+			for (int j = 0; j < idx.size(); j++) {
+				//If we already have this index, we ignore it.
+				if(!indexes.contains(idx.get(j))){
+					indexes.add(idx.get(j));
+					
+					//We add this index to the node
+					node.addTerminalEdgeIndex(idx.get(j));
+				}
+			}
+		}
+		
+		return indexes;
+		
 	}
 	
 	public static boolean isTerminal(char nucleotid){

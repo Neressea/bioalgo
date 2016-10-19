@@ -16,6 +16,8 @@ public class Node {
 		 */
 		private ArrayList<Node> children;
 		
+		private ArrayList<Integer> terminal_edge_indexes;
+		
 		/// DATA FOR LEAFS ///
 		
 		/**
@@ -31,6 +33,7 @@ public class Node {
 		
 		public Node(){
 			children = new ArrayList<Node>();
+			terminal_edge_indexes = new ArrayList<Integer>();
 			edge="";
 		}
 		
@@ -153,7 +156,7 @@ public class Node {
 			}else if(isLeaf()){
 				s = "Leaf [edge=" + edge + " (" + this.id_string + ", " + this.pos + ") {";
 			}else{
-				s = "Node [edge=" + edge + ", children={";
+				s = "Node [edge=" + edge + ", IDs={" + terminal_edge_indexes + "}, children={";
 			}
 			
 			for (int i = 0; i < children.size(); i++) {
@@ -197,5 +200,9 @@ public class Node {
 
 		public void addChild(Node n) {
 			children.add(n);
+		}
+		
+		public void addTerminalEdgeIndex(int index){
+			terminal_edge_indexes.add(index);
 		}
 }
