@@ -20,6 +20,7 @@ public class Node {
 		
 		/// DATA FOR LEAFS ///
 		
+
 		/**
 		 * The id of the string this edge belongs to. 
 		 */
@@ -204,5 +205,9 @@ public class Node {
 		
 		public void addTerminalEdgeIndex(int index){
 			terminal_edge_indexes.add(index);
+		}
+		
+		public ArrayList<Integer> getTerminalEdgeIndexes() {
+			return terminal_edge_indexes;
 		}
 }

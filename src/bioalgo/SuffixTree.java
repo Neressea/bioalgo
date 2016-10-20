@@ -102,4 +102,8 @@ public class SuffixTree {
 		return "Ukonnen tree: " + root + "";
 	}
 	
+	public Node getRoot(){
+		return root;
+	}
+	
 }
