@@ -36,18 +36,21 @@ public class SuffixTree {
 					String label = strings[k].substring(j, i+1);
 					ExtensionRule path=root.findEndPath(label, next_nucl);
 					//If needed, we extand the current path with the nucl. i+1
-					path.grow(next_nucl, k, j);
+					if(path != null)
+						path.grow(next_nucl, k, j);
 				}
 				
-				if(!isTerminal(next_nucl))
-					this.addChild(next_nucl);
+				Node next = new Node(next_nucl);
+				next.setIdString(k);
+				next.setPos(i+1);
+				this.addChild(next);
 			}
 		}
 		
 		//Now, we finally create the indexes of terminal nodes
 		SuffixTree.generateTerminalEdgeIndexes(root);
 	}
-	
+
 	private static ArrayList<Integer> generateTerminalEdgeIndexes(Node node){
 		
 		//If it is a terminal, we just return the ID of its string
@@ -83,12 +86,11 @@ public class SuffixTree {
 		return nucleotid == '$' || nucleotid == '€';
 	}
 	
-	private void addChild(char next_nucl) {
-
+	private void addChild(Node next_nucl) {
 		int i=0;
 		
 		while(i<root.getChildren().size()){
-			if(root.getChildren().get(i).edgeBeginsWith(next_nucl))
+			if(root.getChildren().get(i).edgeBeginsWith(next_nucl.getEdge().charAt(0)))
 				return;
 			
 			i++;

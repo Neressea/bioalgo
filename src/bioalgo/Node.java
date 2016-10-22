@@ -90,7 +90,9 @@ public class Node {
 					}
 				}
 				
-				if(child == null) return null;
+				if(child == null){
+					return null;
+				}
 				
 				end = child.recursiveFindEndPath(label.substring(idx_label), next_nucl);
 			}
@@ -143,6 +145,15 @@ public class Node {
 		
 		public void addNucleotide(char nucl){
 			this.edge+=nucl;
+		}
+		
+		public boolean hasATerminalEdge(){
+			for (Node child : children) {
+				if(child.isTerminal())
+					return true;
+			}
+			
+			return false;
 		}
 		
 		//// GETTERS AND SETTERS
