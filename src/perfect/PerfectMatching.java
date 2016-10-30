@@ -1,13 +1,16 @@
-package bioalgo;
+package perfect;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.sun.javafx.fxml.BeanAdapter;
+
+import sun.security.util.Length;
 
 public class PerfectMatching {
 	
@@ -16,7 +19,7 @@ public class PerfectMatching {
 	
 	//key -> the length of the string, value -> the number of matching corresponding.
 	private HashMap<Integer, Integer> length_distribution;
-	private int total_sequences;
+	private int total_sequences = 0, total_matches = 0;
 	private long beg_time, end_time;
 	
 	private String match;
@@ -29,9 +32,33 @@ public class PerfectMatching {
 		pm.loadFile();
 		
 		pm.beg_time = System.nanoTime();
+		
 		//Then, we launch the algorithm
 		pm.launch();
-		pm.beg_time = System.nanoTime();
+		pm.end_time = System.nanoTime();
+		
+		pm.reader.close();
+		
+		int total_time = (int) ((pm.end_time - pm.beg_time) / 1000000000.0);
+		double average_time = (total_time * 1.0) / pm.total_sequences;
+		double percentage_matching = (pm.total_matches * 1.0 / pm.total_sequences) * 100;
+		DecimalFormat numberFormat = new DecimalFormat("#.00");
+		
+		System.out.println("Statistics: ");
+		System.out.println("Total time: " + total_time);
+		System.out.println("Number of sequences read: " + pm.total_sequences);
+		System.out.println("Number of matching sequences: " + pm.total_matches);
+		System.out.println("Average time per DNA sequence: " + average_time);
+		System.out.println("Percentage of sequences with a match: " + numberFormat.format(percentage_matching));
+		
+		System.out.println("\n\n\n");
+		System.out.println("Length distribution: ");
+		
+		for (Integer length : pm.length_distribution.keySet()) {
+			int number_of_sequences = pm.length_distribution.get(length);
+			System.out.println("Number of sequences of length " + length + ": " + number_of_sequences);
+		}
+		
 	}
 	
 	public PerfectMatching(){
@@ -68,7 +95,7 @@ public class PerfectMatching {
 			}
 			
 			//We memorize the length of the left fragment if a perfect match was found, in other case we update the data
-			if(match != null){
+			if(match != null && !match.equals("")){
 				int left_length = DNA.length() - match.length();
 				
 				if(length_distribution.containsKey(left_length)){
@@ -77,9 +104,11 @@ public class PerfectMatching {
 					length_distribution.put(left_length, 1);
 				}
 				
-				//Once this is done, we update the statistics
-				total_sequences++;
+				total_matches++;
 			}
+			
+			//Once this is done, we update the statistics
+			total_sequences++;
 		}
 		
 	}
@@ -139,7 +168,7 @@ public class PerfectMatching {
 
 	public void loadFile(){
 		try {
-			this.reader = new BufferedReader(new FileReader("s_3_sequence_1M.txt"));
+			this.reader = new BufferedReader(new FileReader("./s_3_sequence_1M.txt"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

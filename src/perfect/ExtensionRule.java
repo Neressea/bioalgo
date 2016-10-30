@@ -1,4 +1,4 @@
-package bioalgo;
+package perfect;
 
 public class ExtensionRule {
 	
