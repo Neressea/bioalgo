@@ -7,10 +7,46 @@ public class KMP {
 	private int T[];
 	private int nb_errors;
 	
-	public KMP(String adapter, String DNA, double authorized_error_rate){
+	public KMP(String adapter, String DNA, double authorized_error_rate, int str){
 		this.adapter=adapter;
 		this.DNA=DNA;
 		this.authorized_error_rate = authorized_error_rate;
+		
+		/*int M = DNA.length();
+        int N = adapter.length();
+ 
+        // create lps[] that will hold the longest
+        // prefix suffix values for pattern
+        this.T = new int[M];
+        int j = 0;  // index for pat[]
+ 
+        // Preprocess the pattern (calculate lps[]
+        // array)
+        this.buildTab();
+ 
+        int i = 0;  // index for txt[]
+        while (i < N)
+        {
+            if (DNA.charAt(j) == adapter.charAt(i)){
+                j++;
+                i++;
+            }
+            if (j == M){
+                System.out.println("Found pattern at index " + (i-j) + " of string " + str);
+                j = this.T[j-1];
+            }
+ 
+            // mismatch after j matches
+            else if (i < N && DNA.charAt(j) != adapter.charAt(i))
+            {
+                // Do not match lps[0..lps[j-1]] characters,
+                // they will match anyway
+                if (j != 0)
+                    j = this.T[j-1];
+                else
+                    i = i+1;
+            }
+        }*/
 	}
 	
 	public String findMatch(){
@@ -20,31 +56,29 @@ public class KMP {
 		
 		if(index == -1){
 			return null;
+		}else{
+			return DNA.substring(index);
+			//return adapter.substring(0, DNA.length() - index);
 		}
-		
-		if(this.DNA.equals(adapter.substring(0, DNA.length() - index))){
-			return adapter.substring(0, DNA.length() - index);
-		}
-		
-		return null;
 	}
 	
 	public int searchIndex(){
 		
-		int m = 0, i = 0;
+		int m = 0, //beginning index in the array
+				i = 0; //shift from the index
 		
 		while(m+i < adapter.length() && i < DNA.length()){
 			if(adapter.charAt(m+i) == DNA.charAt(i)){
 				i++;
 			}else{
 				nb_errors++;
-				if(i != 0 && nb_errors / (m+i) < authorized_error_rate){
+				if(i != 0 && (nb_errors / (i*1.0)) <= authorized_error_rate){
 					i++;
 				}else{
-					m+= i - T[i];
+					m+=i-this.T[i];
 					
 					if(i>0)
-						i = T[i];
+						i = this.T[i];
 				}
 			}	
 		}
@@ -58,7 +92,7 @@ public class KMP {
 	public void buildTab(){
 		
 		int i=0, j=-1;
-		T = new int[DNA.length()+1];
+		T = new int[DNA.length()];
 		char c = '\0';
 		
 		T[0] = j;
@@ -77,6 +111,42 @@ public class KMP {
 
 			c = DNA.charAt(j);
 		}
+		
+		/*this.T = new int[DNA.length()+1];
+		
+		// length of the previous longest prefix suffix
+        int len = 0;
+        int i = 1;
+        this.T[0] = 0;  // lps[0] is always 0
+ 
+        // the loop calculates lps[i] for i = 1 to M-1
+        while (i < this.DNA.length())
+        {
+            if (this.DNA.charAt(i) == this.DNA.charAt(len))
+            {
+                len++;
+                this.T[i] = len;
+                i++;
+            }
+            else  // (pat[i] != pat[len])
+            {
+                // This is tricky. Consider the example.
+                // AAACAAAA and i = 7. The idea is similar 
+                // to search step.
+                if (len != 0)
+                {
+                    len = this.T[len-1];
+ 
+                    // Also, note that we do not increment
+                    // i here
+                }
+                else  // if (len == 0)
+                {
+                    this.T[i] = len;
+                    i++;
+                }
+            }
+        }*/
 		
 	}
 	
