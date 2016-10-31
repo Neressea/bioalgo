@@ -15,7 +15,7 @@ import sun.security.util.Length;
 public class PerfectMatching {
 	
 	private BufferedReader reader;
-	private final static String adapter = "TGGAATTCTCGGGTGCCAAGGAACTCCAGTCACACAGTGATCTCGTATGCCGTCTTCTGCTTG";
+	private static String adapter = "TGGAATTCTCGGGTGCCAAGGAACTCCAGTCACACAGTGATCTCGTATGCCGTCTTCTGCTTG";
 	
 	//key -> the length of the string, value -> the number of matching corresponding.
 	private HashMap<Integer, Integer> length_distribution;
@@ -31,36 +31,35 @@ public class PerfectMatching {
 		//We load the file
 		pm.loadFile();
 		
-		pm.beg_time = System.nanoTime();
-		
 		//Then, we launch the algorithm
 		pm.launch();
-		pm.end_time = System.nanoTime();
 		
-		pm.reader.close();
+		pm.printInfo();
 		
-		int total_time = (int) ((pm.end_time - pm.beg_time) / 1000000000.0);
-		double average_time = (total_time * 1.0) / pm.total_sequences;
-		double percentage_matching = (pm.total_matches * 1.0 / pm.total_sequences) * 100;
+	}
+	
+	public void printInfo() {
+		int total_time = (int) ((this.end_time - this.beg_time) / 1000000000.0);
+		double average_time = (total_time * 1.0) / this.total_sequences;
+		double percentage_matching = (this.total_matches * 1.0 / this.total_sequences) * 100;
 		DecimalFormat numberFormat = new DecimalFormat("#.00");
 		
 		System.out.println("Statistics: ");
 		System.out.println("Total time: " + total_time);
-		System.out.println("Number of sequences read: " + pm.total_sequences);
-		System.out.println("Number of matching sequences: " + pm.total_matches);
+		System.out.println("Number of sequences read: " + this.total_sequences);
+		System.out.println("Number of matching sequences: " + this.total_matches);
 		System.out.println("Average time per DNA sequence: " + average_time);
 		System.out.println("Percentage of sequences with a match: " + numberFormat.format(percentage_matching));
 		
 		System.out.println("\n\n\n");
 		System.out.println("Length distribution: ");
 		
-		for (Integer length : pm.length_distribution.keySet()) {
-			int number_of_sequences = pm.length_distribution.get(length);
+		for (Integer length : this.length_distribution.keySet()) {
+			int number_of_sequences = this.length_distribution.get(length);
 			System.out.println("Number of sequences of length " + length + ": " + number_of_sequences);
 		}
-		
 	}
-	
+
 	public PerfectMatching(){
 		length_distribution = new HashMap<Integer, Integer>();
 	}
@@ -76,6 +75,8 @@ public class PerfectMatching {
 	
 	public void launch() throws Exception {
 		
+		this.beg_time = System.nanoTime();
+		
 		String DNA;
 		int i = 0;
 		
@@ -89,10 +90,6 @@ public class PerfectMatching {
 			//And then we search for the longest suffix/prefix match
 			this.match = ""; //We init for this new strings
 			this.searchForPrefixSuffixMatch(tree);
-			
-			if(i++ < 50){
-				System.out.println(i + "  " + this.match);
-			}
 			
 			//We memorize the length of the left fragment if a perfect match was found, in other case we update the data
 			if(match != null && !match.equals("")){
@@ -111,6 +108,8 @@ public class PerfectMatching {
 			total_sequences++;
 		}
 		
+		this.end_time = System.nanoTime();
+		this.reader.close();
 	}
 	
 	private String searchForPrefixSuffixMatch(SuffixTree tree){

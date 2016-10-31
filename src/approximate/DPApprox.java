@@ -36,7 +36,7 @@ public class DPApprox {
 					if((partial_solution.errors * 1.0) / partial_solution.length < this.error_rate){
 						//Then, if we have no solution, or if this solution is better, we keep it in mind
 						if(best_match == null || best_match.length() < partial_solution.length){
-							best_match = adapter.substring(0, i-1+partial_solution.length);
+							best_match = DNA.substring(j-1);
 						}
 					}
 				}

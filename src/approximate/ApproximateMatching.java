@@ -13,7 +13,7 @@ import perfect.SuffixTree;
 public class ApproximateMatching {
 	
 	private BufferedReader reader;
-	private final static String adapter = "TGGAATTCTCGGGTGCCAAGGAACTCCAGTCACACAGTGATCTCGTATGCCGTCTTCTGCTTG";
+	private String adapter;
 	
 	//key -> the length of the string, value -> the number of matching corresponding.
 	private HashMap<Integer, Integer> length_distribution;
@@ -22,57 +22,59 @@ public class ApproximateMatching {
 	private double total_matches;
 	
 	public static void main(String[] args) throws IOException {
-		ApproximateMatching pm = new ApproximateMatching();
+		ApproximateMatching pm = new ApproximateMatching("TGGAATTCTCGGGTGCCAAGGAACTCCAGTCACACAGTGATCTCGTATGCCGTCTTCTGCTTG");
 		
 		//We load the file
-		pm.loadFile();
-		
-		pm.beg_time = System.nanoTime();
+		pm.loadFile("s_3_sequence_1M.txt");
 		
 		//Then, we launch the algorithm
 		pm.launch();
-		pm.end_time = System.nanoTime();
 		
-		pm.reader.close();
-		
-		int total_time = (int) ((pm.end_time - pm.beg_time) / 1000000000.0);
-		double average_time = (total_time * 1.0) / pm.total_sequences;
-		double percentage_matching = (pm.total_matches * 1.0 / pm.total_sequences) * 100;
+		pm.printInfo();
+		pm.printRepartition();
+	}
+	
+	public void printInfo(){
+		int total_time = (int) ((this.end_time - this.beg_time) / 1000000000.0);
+		double average_time = (total_time * 1.0) / this.total_sequences;
+		double percentage_matching = (this.total_matches * 1.0 / this.total_sequences) * 100;
 		DecimalFormat numberFormat = new DecimalFormat("#.00");
 		
 		System.out.println("Statistics: ");
 		System.out.println("Total time: " + total_time);
-		System.out.println("Number of sequences read: " + pm.total_sequences);
-		System.out.println("Number of matching sequences: " + pm.total_matches);
+		System.out.println("Number of sequences read: " + this.total_sequences);
+		System.out.println("Number of matching sequences: " + this.total_matches);
 		System.out.println("Average time per DNA sequence: " + average_time);
 		System.out.println("Percentage of sequences with a match: " + numberFormat.format(percentage_matching));
-		
+	}
+	
+	public void printRepartition(){
 		System.out.println("\n\n\n");
 		System.out.println("Length distribution: ");
 		
-		for (Integer length : pm.length_distribution.keySet()) {
-			int number_of_sequences = pm.length_distribution.get(length);
+		for (Integer length : this.length_distribution.keySet()) {
+			int number_of_sequences = this.length_distribution.get(length);
 			System.out.println("Number of sequences of length " + length + ": " + number_of_sequences);
 		}
 	}
 	
-	public ApproximateMatching(){
+	public ApproximateMatching(String adapter){
 		length_distribution = new HashMap<Integer, Integer>();
+		this.adapter = adapter;
 	}
 	
 	public void launch() throws IOException{
+		
+		this.beg_time = System.nanoTime();
+		
 		String DNA;
 		int i = 0, k=0;
 		
 		//We load each string
 		while((DNA = reader.readLine()) != null){
 			//For each string, we create a KMP
-			DPApprox kmp = new DPApprox(adapter, DNA, 0.10);
+			DPApprox kmp = new DPApprox(adapter, DNA, 0.25);
 			String match = kmp.findMatch();
-			
-			if(i++ < 50){
-				System.out.println(i + "  " + match);
-			}
 			
 			//We memorize the length of the left fragment if a perfect match was found, in other case we update the data
 			if(match != null && !match.equals("")){
@@ -89,11 +91,18 @@ public class ApproximateMatching {
 			}
 			total_sequences++;
 		}
+		
+		this.end_time = System.nanoTime();
+		this.reader.close();
 	}
 	
-	public void loadFile(){
+	public void setAdapter(String s){
+		this.adapter=s;
+	}
+	
+	public void loadFile(String file){
 		try {
-			this.reader = new BufferedReader(new FileReader("s_3_sequence_1M.txt"));
+			this.reader = new BufferedReader(new FileReader(file));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
