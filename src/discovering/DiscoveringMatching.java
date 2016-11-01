@@ -14,20 +14,22 @@ public class DiscoveringMatching {
 	
 	//key -> the length of the string, value -> the number of matching corresponding.
 	private long beg_time, end_time;
-	private int total_sequences;
+	private int total_sequences, read_sequences;
 	private ArrayList<PWM> matrices;
 	private PWM best = null;
 	
 	public DiscoveringMatching() {
 		matrices = new ArrayList<PWM>();
+		total_sequences = 1000000;
 	}
 	
 	public static void main(String[] args) throws Exception {
 		
 		DiscoveringMatching pm = new DiscoveringMatching();
+		String file = "./Seqset3.txt";
 		
 		//We load the file
-		pm.loadFile("./s_1-1_1M.txt");
+		pm.loadFile(file);//"./s_1-1_1M.txt");
 		
 		//Then, we launch the algorithm
 		pm.launch();
@@ -37,12 +39,15 @@ public class DiscoveringMatching {
 		
 		//Now we check if this seems correct
 		ApproximateMatching am = new ApproximateMatching(pm.best.getConsensus());
-		am.loadFile("./s_1-1_1M.txt");
+		am.loadFile(file);
 		am.launch();
 		am.printInfo();
+		am.printRepartition();
 	}
 	
 	private void launch() throws IOException {
+		
+		System.out.println("###Match discovering launching...");
 		
 		String DNA = reader.readLine();
 		this.beg_time = System.nanoTime();
@@ -52,37 +57,37 @@ public class DiscoveringMatching {
 			matrices.add(new PWM(i));
 		}
 		
+		//variables to keep the best score in mind
+		this.best = matrices.get(0);
+		double best_score = this.best.getScore();
+		
 		//We load each string
 		while(DNA!= null){
 			
 			//We feed each matrix
 			for (int i = 0; i < matrices.size(); i++) {
-				matrices.get(i).feed(DNA.substring(0, i));
+				
+				//We check we still continue to explore this matrix
+				if(matrices.get(i) != null){
+					//If that's the case, we feed it
+					matrices.get(i).feed(DNA.substring(0, i));
+					
+					//Now we check if it is the new best value
+					if(matrices.get(i).getScore() > best_score){
+						this.best = matrices.get(i);
+						best_score = this.best.getScore();
+					}
+				}
 			}
 			
 			//Once this is done, we update the statistics
-			total_sequences++;
+			read_sequences++;
 			DNA = reader.readLine();
 		}
 		
 		this.reader.close();
 		
-		findBest();
-		
 		this.end_time = System.nanoTime();
-	}
-	
-	private void findBest(){
-		//Now we search for the matrix with the best score
-		this.best = matrices.get(0);
-		int best_score = this.best.getScore();
-		
-		for (int i = 0; i < matrices.size(); i++) {
-			if(matrices.get(i).getScore() > best_score){
-				this.best = matrices.get(i);
-				best_score = this.best.getScore();
-			}
-		}
 	}
 	
 	public void printInfo(){
@@ -93,7 +98,8 @@ public class DiscoveringMatching {
 		System.out.println("Total time: " + total_time+"s");
 		System.out.println("Number of sequences read: " + this.total_sequences);
 		
-		System.out.println(this.best.getConsensus()+"  "+this.best.getScore());
+		System.out.println("Consensus string:" + this.best.getConsensus()+", score value:"+this.best.getScore());
+		System.out.println("###End of search");
 	}
 
 	public void loadFile(String file){

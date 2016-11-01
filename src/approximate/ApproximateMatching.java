@@ -41,11 +41,12 @@ public class ApproximateMatching {
 		DecimalFormat numberFormat = new DecimalFormat("#.00");
 		
 		System.out.println("Statistics: ");
-		System.out.println("Total time: " + total_time);
+		System.out.println("Total time: " + total_time+"s");
 		System.out.println("Number of sequences read: " + this.total_sequences);
 		System.out.println("Number of matching sequences: " + this.total_matches);
-		System.out.println("Average time per DNA sequence: " + average_time);
-		System.out.println("Percentage of sequences with a match: " + numberFormat.format(percentage_matching));
+		System.out.println("Average time per DNA sequence: " + average_time+"s");
+		System.out.println("Percentage of sequences with a match: " + numberFormat.format(percentage_matching)+"%");
+		System.out.println("###End of approximate matching");
 	}
 	
 	public void printRepartition(){
@@ -64,7 +65,7 @@ public class ApproximateMatching {
 	}
 	
 	public void launch() throws IOException{
-		
+		System.out.println("###Approximate matching launching...");
 		this.beg_time = System.nanoTime();
 		
 		String DNA;
